@@ -1,0 +1,14 @@
+{
+  "name": "sol-drop",
+  "version": "1.0.0",
+  "main": "airdrop.ts",
+  "repository": "https://github.com/amilz/sol-drop.git",
+  "author": "amilz.sol <85324096+amilz@users.noreply.github.com>",
+  "license": "MIT",
+  "dependencies": {
+    "@solana/web3.js": "^1.63.0"
+  },
+  "scripts": {
+    "drop": "ts-node src/airdrop.ts"
+  }
+}

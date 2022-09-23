@@ -1,0 +1,9 @@
+{
+    "SOL_PER_DROP": 0.001,
+    "DROP_NAME": "Drop Name Identifier # XX",
+    "RPC": "https://example.solana.quiknode.pro/abc/",
+    "OUTPUT_DIR": "output",
+    "NUM_DROP_PER_TX": 16,
+    "TX_INTERVAL": 1000,
+    "EXCLUDE_LIST": ["EXCLUDE_WALLET_1","EXCLUDE_WALLET_2"]
+}
