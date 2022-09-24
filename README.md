@@ -8,8 +8,12 @@ This will take a `gib-holders` export from cryptostraps, reformat the data, and 
 
 Clone repo
 Install TypeScript and ts-node if you don't have it: 
-  `npm install -g typescript`
-  `npm install -g ts-node`
+
+```sh
+npm install -g typescript
+npm install -g ts-node
+```
+  
 Run `yarn install`
 
 ### Configuration 
