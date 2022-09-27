@@ -20,7 +20,8 @@ Update input values for `config/config.json`:
     "OUTPUT_DIR": "output",
     "NUM_DROP_PER_TX": 16,
     "TX_INTERVAL": 1000,
-    "EXCLUDE_LIST": ["EXCLUDE_WALLET_1","EXCLUDE_WALLET_2"]
+    "EXCLUDE_LIST": ["EXCLUDE_WALLET_1","EXCLUDE_WALLET_2"],
+    "AMILZ_SOL_TIP": 0
 }
 ```
 - `SOL_PER_DROP` is the amount of SOL to be dropped per NFT held
@@ -31,6 +32,7 @@ Update input values for `config/config.json`:
 - `NUM_DROP_PER_TX` the number of sol drops to include in a given transaction (don't mess with this unless you've done the math on tx size)
 - `TX_INTERVAL` number of ms to wait between submitting transactions to the network (done to prevent rate limits)--not recommeded to go lower than `1000` as it limits could impact success of some transactions
 - `EXCLUDE_LIST` list of wallets to exclude (replace the strings with your own)
+- `AMILZ_SOL_TIP` amount in sol to tip amilz. default is 0 (that's totally cool!). 
 
 
 ### Wallet

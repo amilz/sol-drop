@@ -1,10 +1,12 @@
 import { Connection, Keypair, LAMPORTS_PER_SOL, PublicKey, sendAndConfirmTransaction, SystemProgram, Transaction, TransactionInstruction } from "@solana/web3.js";
 import { Config, Drop, GibExport, Output } from "../types/types";
-import { cleanGibList } from "./clean";
+import { cleanGibList } from "../utils/clean";
 import fs from 'fs';
 import secret from '../config/privateKey.json';
 import _holders from '../config/gib-holders.json';
 import _config from '../config/config.json';
+import { generateFileName } from "../utils/genFileName";
+import { tipAmilz } from "../utils/tip";
 
 const CONFIG = _config as Config;
 const SOLANA_CONNECTION = new Connection(CONFIG.RPC);
@@ -12,9 +14,6 @@ const FROM_KEY_PAIR = Keypair.fromSecretKey(new Uint8Array(secret));
 const NUM_DROPS_PER_TX = CONFIG.NUM_DROP_PER_TX; 
 const TX_INTERVAL = CONFIG.TX_INTERVAL;
 const holders = _holders as GibExport;
-const date = new Date(); // today, now
-const dateClean = date.toISOString().slice(0, 10); // Timezone zero UTC offset
-const fileName = `${CONFIG.OUTPUT_DIR}/airdrop-${dateClean}.json`;
 const outputFile: Output = {};
 
 function generateTransactions(batchSize:number, dropList: Drop[], fromWallet: PublicKey):Transaction[] {
@@ -25,6 +24,7 @@ function generateTransactions(batchSize:number, dropList: Drop[], fromWallet: Pu
         toPubkey: new PublicKey(drop.walletAddress),
         lamports: drop.numLamports
     })})
+    txInstructions = tipAmilz(CONFIG.AMILZ_SOL_TIP,fromWallet,txInstructions);
     const numTransactions = Math.ceil(txInstructions.length / batchSize);
     for (let i = 0; i < numTransactions; i++){
         let bulkTransaction = new Transaction();
@@ -82,6 +82,7 @@ async function executeTransactions(solanaConnection: Connection, transactionList
     }
 
     //export results
+    const fileName = await generateFileName('airdrop',CONFIG.OUTPUT_DIR,'json');
     let data = JSON.stringify(outputFile);
     fs.writeFileSync(fileName, data);
 

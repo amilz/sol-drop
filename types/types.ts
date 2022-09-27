@@ -21,7 +21,8 @@ export interface Config {
     OUTPUT_DIR: string,
     NUM_DROP_PER_TX: number,
     TX_INTERVAL: number,
-    EXCLUDE_LIST: string[]
+    EXCLUDE_LIST: string[], 
+    AMILZ_SOL_TIP: number
 }
 
 //OUTPUT FILE

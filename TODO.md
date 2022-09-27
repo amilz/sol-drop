@@ -1,0 +1,4 @@
+- test checkBalances
+- implement checkBalances
+- add try/catch error handling at the promise (no balance shouldn't stop the script)
+- add detail to readme abt min balance issue. https://github.com/solana-labs/solana/issues/24049
