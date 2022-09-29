@@ -1,5 +1,6 @@
 config/privateKey.json
-output
+output/airdrop*
+output/removed*
 
 # dependencies
 /node_modules
