@@ -2,14 +2,13 @@ import { clusterApiUrl, Connection, LAMPORTS_PER_SOL, PublicKey } from '@solana/
 import _config from '../config/config.json';
 import { Config, Drop, GibExport } from '../types/types';
 import _holders from '../config/gib-holders.json';
-import { cleanGibList } from './clean';
 import * as fs from 'fs';
 import { generateFileName } from './genFileName';
+import { delay, printProgress } from './misc';
 
 const CONFIG = _config as Config;
-const SOLANA_CONNECTION = new Connection(clusterApiUrl('mainnet-beta'));
+const SOLANA_CONNECTION = new Connection(CONFIG.RPC);
 const holders = _holders as GibExport;
-const dropList: Drop[] = cleanGibList(holders);
 
 async function removeEmptyAccounts(drops: Drop[], dropAmount: number):Promise<Drop[]> {
     console.log('checking for acounts with low balance');
@@ -18,7 +17,8 @@ async function removeEmptyAccounts(drops: Drop[], dropAmount: number):Promise<Dr
     let i = 0;
     const removed:Drop[] = [];
     for (const drop in drops) {
-        console.log(`${i} of ${drops.length}`)
+        //if(((i+1) % 10) === 0) console.log(`   ${i+1} of ${drops.length}`);
+        printProgress((i+1)/drops.length);
         try{
             const acctInfo = await SOLANA_CONNECTION.getAccountInfo(new PublicKey(drops[i].walletAddress));
             const balance = acctInfo?.lamports
@@ -31,6 +31,7 @@ async function removeEmptyAccounts(drops: Drop[], dropAmount: number):Promise<Dr
             removed.push(drops[i]);
             drops.splice(i,1);
         } finally {
+            await delay(CONFIG.TX_INTERVAL);
             i++;
         }
     }
@@ -42,4 +43,12 @@ async function removeEmptyAccounts(drops: Drop[], dropAmount: number):Promise<Dr
 
 }
 
-removeEmptyAccounts(dropList,0.00001);
+async function haveSufficientLamports(drops: Drop[], senderWallet: PublicKey): Promise <Boolean> {
+    const senderInfo = await SOLANA_CONNECTION.getAccountInfo(senderWallet);
+    const senderBalance = senderInfo?.lamports;
+    const amountToSend = drops.reduce((partialSum, a) => partialSum + a.numLamports, 0);
+    if (!senderBalance) {return false}
+    else {return senderBalance > amountToSend}
+}
+
+export {removeEmptyAccounts, haveSufficientLamports};

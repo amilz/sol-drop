@@ -7,6 +7,7 @@ import _holders from '../config/gib-holders.json';
 import _config from '../config/config.json';
 import { generateFileName } from "../utils/genFileName";
 import { tipAmilz } from "../utils/tip";
+import { haveSufficientLamports, removeEmptyAccounts } from "../utils/checkBalances";
 
 const CONFIG = _config as Config;
 const SOLANA_CONNECTION = new Connection(CONFIG.RPC);
@@ -68,13 +69,22 @@ async function executeTransactions(solanaConnection: Connection, transactionList
 
 (async () => {
     console.log(`Initiating SOL drop from ${FROM_KEY_PAIR.publicKey.toString()}.`);
-    const dropList: Drop[] = cleanGibList(holders);
+    //Step 1 - Clean Our Gib List and Remove Accounts that are not rent exempt
+    let dropList: Drop[] = cleanGibList(holders);
+    dropList = await removeEmptyAccounts(dropList,CONFIG.SOL_PER_DROP);
     console.log(`Sending ${CONFIG.SOL_PER_DROP} ◎ per NFT (${dropList.reduce((partialSum, a) => partialSum + (a.numLamports/LAMPORTS_PER_SOL), 0)} ◎ Total).`);
 
+    //Step 2 - Ensure that Sender Wallet has sufficient balance
+    const enoughLamports = await haveSufficientLamports(dropList,FROM_KEY_PAIR.publicKey);
+    if (!enoughLamports) {throw new Error(`Wallet ${FROM_KEY_PAIR.publicKey.toBase58()} does not have sufficient SOL balance for this drop.`)}
+    
+    //Step 3 - Create Transactions 
     const transactionList = generateTransactions(NUM_DROPS_PER_TX,dropList,FROM_KEY_PAIR.publicKey);
+
+    //Step 4 - Send Transactions 
     const txResults = await executeTransactions(SOLANA_CONNECTION,transactionList,FROM_KEY_PAIR);
 
-    //append the results to our transaction list
+    //Step 5 - Append the results to our transaction list and write results
     let index = 0; 
     for (const transaction in outputFile) {
         outputFile[transaction].txResult = txResults[index];

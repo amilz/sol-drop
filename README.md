@@ -66,4 +66,7 @@ AirDrop Complete!🎉
 Transaction Summary written to: output/airdrop-YYYY-MM-DD.json
 ```
 
-Modfied from: [quicknode.com/guides/](https://www.quicknode.com/guides/web3-sdks/how-to-send-bulk-transactions-on-solana)
+### Other Notes
+- Solana requires a minumum balance in the destination account to ensure the account can pay rent (so we've added `checkBalances`. Empty wallets will be removed from the drop list and added to a seperate file so you can follow up with those folks seperately if you'd like). Ref: [https://github.com/solana-labs/solana/issues/24049](https://github.com/solana-labs/solana/issues/24049)
+
+- Modfied from: [quicknode.com/guides/](https://www.quicknode.com/guides/web3-sdks/how-to-send-bulk-transactions-on-solana)
